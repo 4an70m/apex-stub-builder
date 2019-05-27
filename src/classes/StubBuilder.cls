@@ -103,6 +103,7 @@ public with sharing class StubBuilder {
         private final String name;
         private final List<Argument> arguments;
         private Object returnValue;
+        private String exceptionMessage;
         private Type expectedExceptionType;
 
         public Method(String methodName) {
@@ -198,6 +199,12 @@ public with sharing class StubBuilder {
             return this;
         }
 
+        public Method throwException(Type expectedExceptionType, String exceptionMessage) {
+            this.expectedExceptionType = expectedExceptionType;
+            this.exceptionMessage = exceptionMessage;
+            return this;
+        }
+
         public Method preview() {
             System.debug(this.toString());
             return this;
@@ -250,6 +257,9 @@ public with sharing class StubBuilder {
                 return;
             }
             Exception expectedException = (Exception) this.expectedExceptionType.newInstance();
+            if (String.isNotEmpty(this.exceptionMessage)) {
+                expectedException.setMessage(this.exceptionMessage);
+            }
             throw expectedException;
         }
     }
